@@ -1,0 +1,87 @@
+<html>
+<head>
+    <title>Ah-Un Schedule</title>
+    <link rel="icon" href="https://www.ah-un.eu/wp-content/uploads/2021/11/cropped-Ah-Un-Logo_2-32x32.png" sizes="32x32">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://kit.fontawesome.com/9cd64cc426.js" crossorigin="anonymous"></script>
+
+    <script src="static/src/moment.js"></script>
+    <script src="static/src/schedule.js"></script>
+</head>
+<body>
+    <div id="page-header">
+        <div id="page-header-date-controls">
+            <div class="switch-input-container">
+                <button onclick="decreaseYear();"><i class="fa-solid fa-arrow-left"></i></button>
+                <p id="current-year"></p>
+                <button onclick="increaseYear();"><i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+            <div class="switch-input-container">
+                <button onclick="decreaseWeek();"><i class="fa-solid fa-arrow-left"></i></button>
+                <p id="current-week"></p>
+                <button onclick="increaseWeek();"><i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+            <button id="this-week-button">This week</button>
+        </div>
+        <div id="page-header-view-controls">
+            <button id="grid-view-button"><i class="fa-solid fa-table"></i></button>
+            <button id="list-view-button"><i class="fa-solid fa-list"></i></button>
+        </div>
+    </div>
+    <div id="schedule-grid">
+        <div class="schedule-header">
+            <div class="schedule-header-item">
+                <p>Name</p>
+            </div>
+            <div class="schedule-header-item">
+                <p>Monday</p>
+                <p id="monday-date"></p>
+            </div>
+            <div class="schedule-header-item">
+                <p>Tuesday</p>
+                <p id="tuesday-date"></p>
+            </div>
+            <div class="schedule-header-item">
+                <p>Wednesday</p>
+                <p id="wednesday-date"></p>
+            </div>
+            <div class="schedule-header-item">
+                <p>Thursday</p>
+                <p id="thursday-date"></p>
+            </div>
+            <div class="schedule-header-item">
+                <p>Friday</p>
+                <p id="friday-date"></p>
+            </div>
+            <div class="schedule-header-item">
+                <p>Saturday</p>
+                <p id="saturday-date"></p>
+            </div>
+            <div class="schedule-header-item">
+                <p>Sunday</p>
+                <p id="sunday-date"></p>
+            </div>
+        </div>
+        <div class="user-row">
+            <p>Guus</p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p>18:00</p>
+            <p></p>
+            <p>17:30</p>
+            <p>17:00afw</p>
+        </div>
+        <div class="user-row">
+            <p>Isha</p>
+            <p></p>
+            <p></p>
+            <p>17:30</p>
+            <p></p>
+            <p></p>
+            <p></p>
+            <p>17:00</p>
+        </div>
+    </div>
+</body>
+</html>
