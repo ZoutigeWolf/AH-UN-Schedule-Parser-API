@@ -1,15 +1,15 @@
-import os
-from datetime import datetime, timedelta
-import cv2
-import boto3
 import csv
-import requests
 import json
+import os
+from io import StringIO
+
+import boto3
+import cv2
 
 MONTHS = {
     "jan": 1,
     "feb": 2,
-    "mar": 3,
+    "mrt": 3,
     "apr": 4,
     "mei": 5,
     "jun": 6,
@@ -20,6 +20,12 @@ MONTHS = {
     "nov": 11,
     "dec": 12,
 }
+
+POSITIONS = {
+    "vlees": "Meat",
+    "afw": "Dishes"
+}
+
 
 def get_rows_columns_map(table_result, blocks_map):
     rows = {}
@@ -43,7 +49,7 @@ def get_rows_columns_map(table_result, blocks_map):
     return rows, scores
 
 
-def get_text(result, blocks_map):
+def get_text(result, blocks_map) -> str:
     text = ''
     if 'Relationships' in result:
         for relationship in result['Relationships']:
@@ -61,7 +67,7 @@ def get_text(result, blocks_map):
     return text
 
 
-def get_table_csv_results(file_name):
+def get_table_csv_results(file_name: str) -> str:
     img = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
     (thresh, im_bw) = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     cv2.imwrite("temp.png", im_bw)
@@ -110,115 +116,73 @@ def generate_table_csv(table_result, blocks_map, table_index):
     return csv
 
 
-def load_json(filename):
-    with open(filename) as f:
-        return json.load(f)
+def load_csv(data) -> dict[str, dict | int]:
+    reader = list(csv.reader(data))
 
+    times = {
+        "week": int(reader[0][0].split()[1]),
+        "days": {}
+    }
 
-def save_json(filename, data):
-    with open(filename, "w") as f:
-        json.dump(data, f, indent=4)
+    raw_dates = reader[0]
+    del reader[0]
+    del raw_dates[0]
+    del raw_dates[-1]
 
+    dates = []
 
-def load_csv(filename):
-    with open(filename) as f:
-        reader = list(csv.reader(f))
+    for d in raw_dates:
+        date = d.strip().split()[1].split("-")
+        date[1] = str(MONTHS[date[1]])
+        dates.append("/".join(date))
 
-        times = {
-            "week": int(reader[0][0].split()[1]),
-            "days": {}
-        }
+    for date in dates:
+        times["days"][date] = {}
 
-        raw_dates = reader[0]
-        del reader[0]
-        del raw_dates[0]
-        del raw_dates[-1]
+    for i, row in enumerate(reader):
+        name = row[0].strip()
 
-        dates = []
+        if not name:
+            continue
 
-        for d in raw_dates:
-            date = d.strip().split()[1].split("-")
-            date[1] = str(MONTHS[date[1]])
-            dates.append("/".join(date))
+        del row[0]
+        del row[-1]
 
-        for date in dates:
-            times["days"][date] = {}
+        for j, t in enumerate(row):
+            t = t.strip()
 
-        for i, row in enumerate(reader):
-            name = row[0].strip()
+            if dates[j] not in times["days"]:
+                times["days"][dates[j]] = {}
 
-            if not name:
+            if not t:
+                times["days"][dates[j]][name] = None
                 continue
 
-            del row[0]
-            del row[-1]
+            time = t
+            pos = None
 
-            for j, t in enumerate(row):
-                t = t.strip()
+            if len(t) > 5:
+                time = [int(i) for i in t[:5].split(":")]
+                pos = t[5:].lower().strip()
 
-                if dates[j] not in times["days"]:
-                    times["days"][dates[j]] = {}
+                if pos in POSITIONS:
+                    pos = POSITIONS[pos]
 
-                times["days"][dates[j]][name] = (i, t if t else None)
+            times["days"][dates[j]][name] = {
+                "time": time,
+                "position": pos
+            }
 
-        return times
-
-
-def send_notification(data, key):
-    days = {d: v for d, v in data.items() if "Guus" in v and v["Guus"][1] is not None}
-    n = len(days)
-
-    body = []
-
-    for d, v in days.items():
-        dt = datetime.strptime(d, "%d/%m") - timedelta(days=1)
-
-        body.append(f"{dt.strftime('%A')} {v['Guus']}")
-
-    requests.post("https://api.mynotifier.app", {
-        "apiKey": key,
-        "message": "New work schedule",
-        "description": f"You work {n} {'time' if n == 1 else 'times'} next week",
-        "body": "\n".join(body),
-        "type": "info"
-    })
+    return times
 
 
 def analyze(file_name):
-    config = load_json("config.json")
+    csv_data = get_table_csv_results(file_name)
 
-    table_csv = get_table_csv_results(file_name)
+    json_data = load_csv(StringIO(csv_data))
 
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    if not os.path.exists(f"data/{now}"):
-        os.mkdir(f"data/{now}")
-
-    with open(f"data/{now}/roster.csv", "w") as f:
-        f.write(table_csv)
-
-    data = load_csv(f"data/{now}/roster.csv")
-
-    schedule = load_json("schedule.json")
-
-    year = str(datetime.now().year)
-    week = str(data["week"])
-
-    if year not in schedule.keys():
-        schedule[year] = {}
-
-    if week in schedule[year]:
-        del schedule[year][week]
-
-    schedule[year][week] = data["days"]
-
-    save_json("schedule.json", schedule)
-
-    send_notification(data["days"], config["notifier_api_key"])
-
-    # TODO: Send data to calendar
+    return json_data
 
 
 if __name__ == "__main__":
-    analyze("rooster.png")
-    analyze("rooster2.jpeg")
+    print(json.dumps(analyze("rooster3.jpg")))
