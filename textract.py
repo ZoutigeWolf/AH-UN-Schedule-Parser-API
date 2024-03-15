@@ -1,6 +1,7 @@
 import csv
 import json
 import os
+from datetime import datetime
 from io import StringIO
 
 import boto3
@@ -121,6 +122,7 @@ def load_csv(data) -> dict[str, dict | int]:
 
     times = {
         "week": int(reader[0][0].split()[1]),
+        "year": datetime.now().year,
         "days": {}
     }
 
@@ -129,15 +131,10 @@ def load_csv(data) -> dict[str, dict | int]:
     del raw_dates[0]
     del raw_dates[-1]
 
-    dates = []
-
-    for d in raw_dates:
-        date = d.strip().split()[1].split("-")
-        date[1] = str(MONTHS[date[1]])
-        dates.append("/".join(date))
+    dates = range(7)
 
     for date in dates:
-        times["days"][date] = {}
+        times["days"][date] = []
 
     for i, row in enumerate(reader):
         name = row[0].strip()
@@ -151,14 +148,15 @@ def load_csv(data) -> dict[str, dict | int]:
         for j, t in enumerate(row):
             t = t.strip()
 
-            if dates[j] not in times["days"]:
-                times["days"][dates[j]] = {}
-
             if not t:
-                times["days"][dates[j]][name] = None
                 continue
 
-            time = [int(i) for i in t[:5].split(":")]
+            time_parts = [int(i) for i in t[:5].split(":")]
+            time = {
+                "hour": time_parts[0],
+                "minutes": time_parts[1]
+            }
+
             pos = None
 
             if len(t) > 5:
@@ -167,10 +165,11 @@ def load_csv(data) -> dict[str, dict | int]:
                 if pos in POSITIONS:
                     pos = POSITIONS[pos]
 
-            times["days"][dates[j]][name] = {
+            times["days"][dates[j]].append({
+                "name": name,
                 "time": time,
                 "position": pos
-            }
+            })
 
     return times
 
