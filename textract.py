@@ -164,6 +164,8 @@ def load_csv(data) -> dict[str, dict | int]:
 
                 if pos in POSITIONS:
                     pos = POSITIONS[pos]
+                else:
+                    pos = None
 
             times["days"][dates[j]].append({
                 "name": name,
