@@ -158,11 +158,10 @@ def load_csv(data) -> dict[str, dict | int]:
                 times["days"][dates[j]][name] = None
                 continue
 
-            time = t
+            time = [int(i) for i in t[:5].split(":")]
             pos = None
 
             if len(t) > 5:
-                time = [int(i) for i in t[:5].split(":")]
                 pos = t[5:].lower().strip()
 
                 if pos in POSITIONS:
@@ -185,4 +184,4 @@ def analyze(file_name):
 
 
 if __name__ == "__main__":
-    print(json.dumps(analyze("rooster3.jpg")))
+    print(json.dumps(analyze("rooster.jpg")))
