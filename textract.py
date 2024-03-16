@@ -164,19 +164,29 @@ def load_csv(data) -> dict[str, dict | int]:
             if len(t) > 5:
                 pos = t[5:].lower().strip()
 
-                if pos in POSITIONS:
-                    pos = POSITIONS[pos]
+                if len(pos.split()) == 2:
+                    pos = POSITIONS[pos.split()[0]]
 
-                elif ":" in pos:
-                    time_parts = [int(i) for i in pos.split(":")]
+                    time_parts = [int(i) for i in pos.split()[1].split(":")]
                     end_time = {
                         "hour": time_parts[0],
                         "minutes": time_parts[1]
                     }
-                    pos = None
 
                 else:
-                    pos = None
+                    if pos in POSITIONS:
+                        pos = POSITIONS[pos]
+
+                    elif ":" in pos:
+                        time_parts = [int(i) for i in pos.split(":")]
+                        end_time = {
+                            "hour": time_parts[0],
+                            "minutes": time_parts[1]
+                        }
+                        pos = None
+
+                    else:
+                        pos = None
 
             times["days"][dates[j]].append({
                 "name": name,
