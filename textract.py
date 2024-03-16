@@ -152,10 +152,12 @@ def load_csv(data) -> dict[str, dict | int]:
                 continue
 
             time_parts = [int(i) for i in t[:5].split(":")]
-            time = {
+            start_time = {
                 "hour": time_parts[0],
                 "minutes": time_parts[1]
             }
+
+            end_time = None
 
             pos = None
 
@@ -164,12 +166,22 @@ def load_csv(data) -> dict[str, dict | int]:
 
                 if pos in POSITIONS:
                     pos = POSITIONS[pos]
+
+                elif ":" in pos:
+                    time_parts = [int(i) for i in pos.split(":")]
+                    end_time = {
+                        "hour": time_parts[0],
+                        "minutes": time_parts[1]
+                    }
+                    pos = None
+
                 else:
                     pos = None
 
             times["days"][dates[j]].append({
                 "name": name,
-                "time": time,
+                "start_time": start_time,
+                "end_time": end_time,
                 "position": pos
             })
 
@@ -185,4 +197,4 @@ def analyze(file_name):
 
 
 if __name__ == "__main__":
-    print(json.dumps(analyze("rooster.jpg")))
+    print(json.dumps(analyze("rooster2.jpg")))
