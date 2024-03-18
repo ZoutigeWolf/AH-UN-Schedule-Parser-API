@@ -27,6 +27,21 @@ POSITIONS = {
     "afw": "Dishes"
 }
 
+FULL_TIME_HOURS = {
+    "V": {
+        "hour": "11",
+        "minutes": "0"
+    },
+    "Y": {
+        "hour": "11",
+        "minutes": "0"
+    },
+    "L": {
+        "hour": "14",
+        "minutes": "30"
+    }
+}
+
 
 def get_rows_columns_map(table_result, blocks_map):
     rows = {}
@@ -139,11 +154,31 @@ def load_csv(data) -> dict[str, dict | int]:
     for i, row in enumerate(reader):
         name = row[0].strip()
 
+        if "week" in row[0].lower():
+            continue
+
         if not name:
             continue
 
         del row[0]
         del row[-1]
+
+        if "V " in row[1:] or "L " in row[1:] or "y " in row[1:]:
+            sc = 0
+            for idx, c in enumerate(row):
+                if c == "":
+                    sc += 1
+
+                elif sc > 0:
+                    for cidx in range(1, sc + 1):
+                        row[idx - cidx] = "_"
+
+                    for _ in range(sc // 2):
+                        row.insert(idx - sc, "")
+
+                    sc = 0
+
+        row = [x for x in row if x != "_"]
 
         for j, t in enumerate(row):
             t = t.strip()
@@ -151,18 +186,24 @@ def load_csv(data) -> dict[str, dict | int]:
             if not t:
                 continue
 
-            time_parts = [int(i) for i in t[:5].split(":")]
-            start_time = {
-                "hour": time_parts[0],
-                "minutes": time_parts[1]
-            }
+            is_full_time = t.upper() in ["V", "L", "Y"]
+
+            if not is_full_time:
+                time_parts = [int(i) for i in t[:5].split(":")]
+                start_time = {
+                    "hour": time_parts[0],
+                    "minutes": time_parts[1]
+                }
+
+            else:
+                start_time = FULL_TIME_HOURS[t.upper()]
 
             end_time = None
 
             pos = None
 
-            if len(t) > 5:
-                pos = t[5:].lower().strip()
+            if len(t) > 5 or (is_full_time and len(t.split()) > 1):
+                pos = t[5:].lower().strip() if not is_full_time else t.split()[1]
 
                 if len(pos.split()) == 2:
                     pos = POSITIONS[pos.split()[0]]
@@ -192,7 +233,8 @@ def load_csv(data) -> dict[str, dict | int]:
                 "name": name,
                 "start_time": start_time,
                 "end_time": end_time,
-                "position": pos
+                "position": pos,
+                "full_time": is_full_time
             })
 
     return times
@@ -207,4 +249,7 @@ def analyze(file_name):
 
 
 if __name__ == "__main__":
-    print(json.dumps(analyze("rooster2.jpg")))
+    print(json.dumps(analyze("rooster3.jpg")))
+
+    # ['V', '', '', '', 'L', '', '', '', 'y', '', 'y', '', 'L', '']
+    # [V L Y Y L  ]
