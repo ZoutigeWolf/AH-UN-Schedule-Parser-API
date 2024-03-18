@@ -37,8 +37,8 @@ FULL_TIME_HOURS = {
         "minutes": 0
     },
     "L": {
-        "hour": "14",
-        "minutes": "30"
+        "hour": 14,
+        "minutes": 30
     }
 }
 
