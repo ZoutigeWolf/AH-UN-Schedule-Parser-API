@@ -29,12 +29,12 @@ POSITIONS = {
 
 FULL_TIME_HOURS = {
     "V": {
-        "hour": "11",
-        "minutes": "0"
+        "hour": 11,
+        "minutes": 0
     },
     "Y": {
-        "hour": "11",
-        "minutes": "0"
+        "hour": 11,
+        "minutes": 0
     },
     "L": {
         "hour": "14",
