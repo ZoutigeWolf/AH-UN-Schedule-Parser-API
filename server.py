@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from datetime import datetime
 from flask import Flask, request, jsonify
 from uuid import uuid4
@@ -7,6 +8,10 @@ from uuid import uuid4
 from textract import analyze
 
 app = Flask(__name__)
+
+gunicorn_logger = logging.getLogger('gunicorn.debug')
+app.logger.handlers = gunicorn_logger.handlers
+app.logger.setLevel(gunicorn_logger.level)
 
 
 def load_json(file_name: str) -> dict | list:
@@ -167,10 +172,7 @@ def post_roster():
 
     image.save(filename)
 
-    try:
-        data = analyze(filename)
-    except:
-        return "Invalid image", 400
+    data = analyze(filename)
 
     os.remove(filename)
 
