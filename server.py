@@ -1,13 +1,22 @@
 import os
+import json
 from datetime import datetime
 from flask import Flask, request, jsonify
 from uuid import uuid4
 
-from zouti_utils.json import load_json, write_json
-
 from textract import analyze
 
 app = Flask(__name__)
+
+
+def load_json(file_name: str) -> dict | list:
+    with open(file_name) as f:
+        return json.load(f)
+
+
+def write_json(file_name: str, data: dict | list) -> None:
+    with open(file_name, 'w') as f:
+        json.dump(data, f)
 
 
 def get_user_from_token(token: str) -> dict | None:
