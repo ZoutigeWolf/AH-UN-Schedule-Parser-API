@@ -152,6 +152,7 @@ def load_csv(data) -> dict[str, dict | int]:
         times["days"][date] = []
 
     for i, row in enumerate(reader):
+        print(row)
         name = row[0].strip()
 
         if "week" in row[0].lower():
@@ -163,7 +164,7 @@ def load_csv(data) -> dict[str, dict | int]:
         del row[0]
         del row[-1]
 
-        if "V " in row[1:] or "L " in row[1:] or "y " in row[1:]:
+        if ("V " in row[1:] or "L " in row[1:] or "y " in row[1:]) and len(row) > 9:
             sc = 0
             for idx, c in enumerate(row):
                 if c == "":
@@ -250,6 +251,3 @@ def analyze(file_name):
 
 if __name__ == "__main__":
     print(json.dumps(analyze("rooster3.jpg")))
-
-    # ['V', '', '', '', 'L', '', '', '', 'y', '', 'y', '', 'L', '']
-    # [V L Y Y L  ]
