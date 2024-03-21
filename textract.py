@@ -1,11 +1,10 @@
 import csv
 import json
 import os
-from datetime import datetime
-from io import StringIO
-
 import boto3
 import cv2
+from datetime import datetime
+from io import StringIO
 
 MONTHS = {
     "jan": 1,
@@ -152,7 +151,6 @@ def load_csv(data) -> dict[str, dict | int]:
         times["days"][date] = []
 
     for i, row in enumerate(reader):
-        print(row)
         name = row[0].strip()
 
         if "week" in row[0].lower():
