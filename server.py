@@ -21,7 +21,7 @@ def load_json(file_name: str) -> dict | list:
 
 def write_json(file_name: str, data: dict | list) -> None:
     with open(file_name, 'w') as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=4)
 
 
 def get_user_from_token(token: str) -> dict | None:
@@ -92,7 +92,7 @@ def post_user():
 
     data = request.json
 
-    print(data)
+    app.logger.log(10, data)
 
     name = data.get("name")
     admin = data.get("admin")
@@ -130,7 +130,7 @@ def put_user(token: str):
 
     data = request.json
 
-    print(data)
+    app.logger.log(10, data)
 
     if data.keys() != ["name", "admin"]:
         return "Invalid data", 400
