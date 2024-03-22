@@ -57,7 +57,7 @@ def delete_user(token: str) -> None:
 
 
 @app.get("/users/<token>")
-def get_user(token: str):
+def api_get_user(token: str):
     user = get_user_from_token(token)
 
     if not user:
@@ -67,7 +67,7 @@ def get_user(token: str):
 
 
 @app.get("/users")
-def get_users():
+def api_get_users():
     auth_token = request.headers.get("Authorization")
 
     auth_user = get_user_from_token(auth_token)
@@ -79,7 +79,7 @@ def get_users():
 
 
 @app.post("/users")
-def post_user():
+def api_post_user():
     auth_token = request.headers.get("Authorization")
 
     auth_user = get_user_from_token(auth_token)
@@ -110,7 +110,7 @@ def post_user():
 
 
 @app.put("/users/<token>")
-def put_user(token: str):
+def api_put_user(token: str):
     auth_token = request.headers.get("Authorization")
 
     auth_user = get_user_from_token(auth_token)
@@ -137,7 +137,7 @@ def put_user(token: str):
 
 
 @app.delete("/users/<token>")
-def delete_user(token: str):
+def api_delete_user(token: str):
     auth_token = request.headers.get("Authorization")
 
     auth_user = get_user_from_token(auth_token)
@@ -161,7 +161,7 @@ def delete_user(token: str):
 
 
 @app.post("/")
-def post_roster():
+def api_post_roster():
     image = request.files.get('image')
 
     if not image:
