@@ -93,6 +93,7 @@ def post_user():
     data = request.json
 
     name = data.get("name")
+    admin = data.get("admin")
 
     if not name:
         return "Invalid data", 404
@@ -100,7 +101,7 @@ def post_user():
     user = {
         "name": name,
         "token": uuid4(),
-        "admin": False
+        "admin": admin
     }
 
     save_user(user)
