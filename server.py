@@ -92,6 +92,8 @@ def post_user():
 
     data = request.json
 
+    print(data)
+
     name = data.get("name")
     admin = data.get("admin")
 
@@ -100,7 +102,7 @@ def post_user():
 
     user = {
         "name": name,
-        "token": uuid4(),
+        "token": str(uuid4()),
         "admin": admin
     }
 
@@ -127,6 +129,8 @@ def put_user(token: str):
         return "User not found", 404
 
     data = request.json
+
+    print(data)
 
     if data.keys() != ["name", "admin"]:
         return "Invalid data", 400
