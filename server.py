@@ -156,7 +156,9 @@ def delete_user(token: str):
 
     delete_user(user.get("token"))
 
-    return "Deleted user", 200
+    return {
+        "message": "User deleted"
+    }
 
 
 @app.post("/")
@@ -176,7 +178,7 @@ def post_roster():
 
     os.remove(filename)
 
-    return jsonify(data), 200
+    return jsonify(data)
 
 
 if __name__ == "__main__":
