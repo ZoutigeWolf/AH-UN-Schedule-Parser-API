@@ -92,7 +92,7 @@ def post_user():
 
     data = request.json
 
-    app.logger.log(10, data)
+    app.logger.debug(data)
 
     name = data.get("name")
     admin = data.get("admin")
@@ -130,7 +130,7 @@ def put_user(token: str):
 
     data = request.json
 
-    app.logger.log(10, data)
+    app.logger.debug(data)
 
     if data.keys() != ["name", "admin"]:
         return "Invalid data", 400
