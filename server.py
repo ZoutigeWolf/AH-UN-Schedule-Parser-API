@@ -211,7 +211,7 @@ def api_post_chats():
     chat = {
         "name": auth_user["name"],
         "message": message,
-        "when": datetime.utcnow()
+        "when": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     }
 
     chats = load_json("chats.json")
