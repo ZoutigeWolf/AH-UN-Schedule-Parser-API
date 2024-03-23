@@ -3,6 +3,7 @@ import json
 import os
 import boto3
 import cv2
+import numpy as np
 from datetime import datetime
 from io import StringIO
 
@@ -38,7 +39,15 @@ FULL_TIME_HOURS = {
     "L": {
         "hour": 14,
         "minutes": 30
-    }
+    },
+    "I": {
+        "hour": 14,
+        "minutes": 30
+    },
+    "!": {
+            "hour": 14,
+            "minutes": 30
+        }
 }
 
 
@@ -83,15 +92,21 @@ def get_text(result, blocks_map) -> str:
 
 
 def get_table_csv_results(file_name: str) -> str:
-    img = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
-    (thresh, im_bw) = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    img = cv2.imread(file_name, 0)
+
+    _, im_bw = cv2.threshold(img, 200, 255, cv2.THRESH_BINARY)
+
+    im_bw = cv2.erode(im_bw, cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1)), iterations=1)
+    # im_bw = cv2.dilate(im_bw, cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2)), iterations=1)
+
     cv2.imwrite("temp.png", im_bw)
+
     with open("temp.png", 'rb') as file:
         img_test = file.read()
         bytes_test = bytearray(img_test)
         print('Image loaded', file_name)
 
-    os.remove("temp.png")
+    # os.remove("temp.png")
 
     # process using image bytes
     # get the results
@@ -151,6 +166,7 @@ def load_csv(data) -> dict[str, dict | int]:
         times["days"][date] = []
 
     for i, row in enumerate(reader):
+        print(row)
         name = row[0].strip()
 
         if "week" in row[0].lower():
@@ -185,7 +201,7 @@ def load_csv(data) -> dict[str, dict | int]:
             if not t:
                 continue
 
-            is_full_time = t.upper() in ["V", "L", "Y"]
+            is_full_time = t.upper() in FULL_TIME_HOURS.keys()
 
             if not is_full_time:
                 time_parts = [int(i) for i in t[:5].split(":")]
@@ -248,4 +264,4 @@ def analyze(file_name):
 
 
 if __name__ == "__main__":
-    print(json.dumps(analyze("rooster3.jpg")))
+    print(json.dumps(analyze("test/img.png")))
