@@ -94,10 +94,9 @@ def get_text(result, blocks_map) -> str:
 def get_table_csv_results(file_name: str) -> str:
     img = cv2.imread(file_name, 0)
 
-    _, im_bw = cv2.threshold(img, 200, 255, cv2.THRESH_BINARY)
+    _, im_bw = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY)
 
-    im_bw = cv2.erode(im_bw, cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1)), iterations=1)
-    # im_bw = cv2.dilate(im_bw, cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2)), iterations=1)
+    # im_bw = cv2.erode(im_bw, cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1)), iterations=1)
 
     cv2.imwrite("temp.png", im_bw)
 
