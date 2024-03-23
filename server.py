@@ -2,12 +2,15 @@ import os
 import json
 import logging
 from datetime import datetime
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from uuid import uuid4
 
 from textract import analyze
+from chatannouncer import ChatAnnouncer, format_sse
+
 
 app = Flask(__name__)
+announcer = ChatAnnouncer()
 
 gunicorn_logger = logging.getLogger('gunicorn.debug')
 app.logger.handlers = gunicorn_logger.handlers
@@ -220,8 +223,27 @@ def api_post_chats():
 
     write_json("chats.json", chats)
 
+    announcer.announce(format_sse(json.dumps(chat)))
+
     return jsonify(chat), 201
 
+
+@app.get("/chats/listen")
+def api_get_chats_listen():
+    auth_token = request.headers.get("Authorization")
+
+    auth_user = get_user_from_token(auth_token)
+
+    if not auth_user:
+        return "Unauthorized", 401
+
+    def stream():
+        messages = announcer.listen()
+        while True:
+            msg = messages.get()
+            yield msg
+
+    return Response(stream(), mimetype="text/event-stream")
 
 if __name__ == "__main__":
     app.run(port=11111)
