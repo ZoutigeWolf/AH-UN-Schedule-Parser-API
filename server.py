@@ -180,5 +180,48 @@ def api_post_roster():
     return jsonify(data)
 
 
+@app.get("/chats")
+def api_get_chats():
+    auth_token = request.headers.get("Authorization")
+
+    auth_user = get_user_from_token(auth_token)
+
+    if not auth_user:
+        return "Unauthorized", 401
+
+    return jsonify(load_json("chats.json"))
+
+
+@app.post("/chats")
+def api_post_chats():
+    auth_token = request.headers.get("Authorization")
+
+    auth_user = get_user_from_token(auth_token)
+
+    if not auth_user:
+        return "Unauthorized", 401
+
+    data = request.json
+
+    message = data.get("message")
+
+    if not message:
+        return "Missing message", 400
+
+    chat = {
+        "name": auth_user["name"],
+        "message": message,
+        "when": datetime.utcnow()
+    }
+
+    chats = load_json("chats.json")
+
+    chats.append(chat)
+
+    write_json("chats.json", chats)
+
+    return jsonify(chat), 201
+
+
 if __name__ == "__main__":
     app.run(port=11111)
