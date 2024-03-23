@@ -243,7 +243,8 @@ def api_get_chats_listen():
             msg = messages.get()
             yield msg
 
-    return Response(stream(), mimetype="text/event-stream")
+    return Response(stream(), content_type="text/event-stream")
+
 
 if __name__ == "__main__":
     app.run(port=11111)
