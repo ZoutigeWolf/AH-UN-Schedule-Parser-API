@@ -1,10 +1,8 @@
 import csv
 import json
-import os
 import boto3
 import cv2
-import numpy as np
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import StringIO
 
 MONTHS = {
@@ -145,27 +143,19 @@ def generate_table_csv(table_result, blocks_map, table_index):
     return csv
 
 
-def load_csv(data) -> dict[str, dict | int]:
+def load_csv(data) -> list:
     reader = list(csv.reader(data))
 
-    times = {
-        "week": int(reader[0][0].split()[1]),
-        "year": datetime.now().year,
-        "days": {}
-    }
+    week = int(reader[0][0].split()[1])
+
+    times = []
 
     raw_dates = reader[0]
     del reader[0]
     del raw_dates[0]
     del raw_dates[-1]
 
-    dates = range(7)
-
-    for date in dates:
-        times["days"][date] = []
-
     for i, row in enumerate(reader):
-        print(row)
         name = row[0].strip()
 
         if "week" in row[0].lower():
@@ -199,6 +189,8 @@ def load_csv(data) -> dict[str, dict | int]:
 
             if not t:
                 continue
+
+            date = datetime(datetime.now().year, 1, 1) + timedelta(days=(week - 1) * 7 + j)
 
             is_full_time = t.upper() in FULL_TIME_HOURS.keys()
 
@@ -243,10 +235,10 @@ def load_csv(data) -> dict[str, dict | int]:
                     else:
                         pos = None
 
-            times["days"][dates[j]].append({
+            times.append({
                 "name": name,
-                "start_time": start_time,
-                "end_time": end_time,
+                "start": date.replace(hour=start_time["hour"], minute=start_time["minutes"]).strftime("%Y-%m-%d %H:%M"),
+                "end": date.replace(hour=end_time["hour"], minute=end_time["minutes"]).strftime("%Y-%m-%d %H:%M") if end_time else None,
                 "position": pos,
                 "full_time": is_full_time
             })
