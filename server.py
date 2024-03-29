@@ -1,5 +1,6 @@
 import os
 import logging
+import base64
 from datetime import datetime
 from flask import Flask, request, jsonify
 
@@ -15,7 +16,7 @@ app.logger.setLevel(gunicorn_logger.level)
 
 @app.post("/")
 def api_post_roster():
-    image = request.files.get('image')
+    image = request.json.get('image')
 
     if not image:
         return "Missing image", 400
@@ -24,7 +25,8 @@ def api_post_roster():
 
     filename = f"{now}.jpeg"
 
-    image.save(filename)
+    with open(filename, "wb") as f:
+        f.write(base64.decodebytes(image))
 
     data = analyze(filename)
 
@@ -34,4 +36,4 @@ def api_post_roster():
 
 
 if __name__ == "__main__":
-    app.run(port=11111)
+    app.run(port=11115)

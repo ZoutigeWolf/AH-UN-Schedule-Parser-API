@@ -255,4 +255,4 @@ def analyze(file_name):
 
 
 if __name__ == "__main__":
-    print(json.dumps(analyze("test/img.png")))
+    print(json.dumps(analyze("test/img2.jpeg")))
