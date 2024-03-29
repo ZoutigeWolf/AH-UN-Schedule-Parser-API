@@ -237,7 +237,7 @@ def load_csv(data) -> list:
 
             times.append({
                 "name": name,
-                "start": date.replace(hour=start_time["hour"], minute=start_time["minutes"]).strftime("%Y-%m-%dT%H:%M:00"),
+                "start": date.replace(hour=start_time["hour"], minute=start_time["minutes"]).strftime("%Y-%m-%d %H:%M"),
                 "end": date.replace(hour=end_time["hour"], minute=end_time["minutes"]).strftime("%Y-%m-%d %H:%M") if end_time else None,
                 "position": pos,
                 "full_time": is_full_time
