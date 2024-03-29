@@ -239,7 +239,7 @@ def load_csv(data) -> list:
                 "name": name,
                 "start": date.replace(hour=start_time["hour"], minute=start_time["minutes"]).strftime("%Y-%m-%d %H:%M"),
                 "end": date.replace(hour=end_time["hour"], minute=end_time["minutes"]).strftime("%Y-%m-%d %H:%M") if end_time else None,
-                "position": pos,
+                "position": pos if pos else "None",
                 "full_time": is_full_time
             })
 
