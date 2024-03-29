@@ -26,7 +26,7 @@ def api_post_roster():
     filename = f"{now}.jpeg"
 
     with open(filename, "wb") as f:
-        f.write(base64.decodebytes(image))
+        f.write(base64.b64decode(image))
 
     data = analyze(filename)
 
