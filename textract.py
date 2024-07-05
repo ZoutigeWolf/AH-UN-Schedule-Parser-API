@@ -62,13 +62,10 @@ def get_rows_columns_map(table_result, blocks_map):
                     row_index = cell['RowIndex']
                     col_index = cell['ColumnIndex']
                     if row_index not in rows:
-                        # create new row
                         rows[row_index] = {}
 
-                    # get confidence score
                     scores.append(str(cell['Confidence']))
 
-                    # get the text value
                     rows[row_index][col_index] = get_text(cell, blocks_map)
     return rows, scores
 
@@ -105,13 +102,10 @@ def get_table_csv_results(file_name: str) -> str:
 
     os.remove("temp.png")
 
-    # process using image bytes
-    # get the results
     session = boto3.Session(profile_name='default')
     client = session.client('textract', region_name='eu-west-2')
     response = client.analyze_document(Document={'Bytes': bytes_test}, FeatureTypes=['TABLES'])
 
-    # Get the text blocks
     blocks = response['Blocks']
 
     blocks_map = {}
