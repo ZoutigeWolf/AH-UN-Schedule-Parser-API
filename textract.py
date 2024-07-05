@@ -22,10 +22,10 @@ MONTHS = {
 }
 
 POSITIONS = {
-    "vlees": "Meat",
-    "vices": "Meat",
-    "viees": "Meat",
-    "afw": "Dishes"
+    "vlees": 2,
+    "vices": 2,
+    "viees": 2,
+    "afw": 1
 }
 
 FULL_TIME_HOURS = {
@@ -206,7 +206,7 @@ def load_csv(data) -> list:
 
             end_time = None
 
-            pos = None
+            pos = 0
 
             if len(t) > 5 or (is_full_time and len(t.split()) > 1):
                 pos = t[5:].lower().strip() if not is_full_time else t.split()[1]
@@ -230,10 +230,10 @@ def load_csv(data) -> list:
                             "hour": time_parts[0],
                             "minutes": time_parts[1]
                         }
-                        pos = None
+                        pos = 0
 
                     else:
-                        pos = None
+                        pos = 0
 
             times.append({
                 "name": name,
