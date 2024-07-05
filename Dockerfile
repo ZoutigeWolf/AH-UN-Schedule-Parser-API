@@ -2,8 +2,10 @@ FROM python:3.11-alpine
 
 COPY requirements.txt ./
 
-RUN apt-get install build-essential
-RUN pip install --upgrade pip setuptools wheel
+RUN apk update && apk add
+RUN apk add --update alpine-sdk
+
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
