@@ -103,7 +103,7 @@ def get_table_csv_results(file_name: str) -> str:
         bytes_test = bytearray(img_test)
         print('Image loaded', file_name)
 
-    # os.remove("temp.png")
+    os.remove("temp.png")
 
     # process using image bytes
     # get the results
@@ -255,4 +255,4 @@ def analyze(file_name):
 
 
 if __name__ == "__main__":
-    print(json.dumps(analyze("test/img2.jpeg")))
+    print(json.dumps(analyze("test/test.jpeg")))
