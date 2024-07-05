@@ -103,8 +103,13 @@ def get_table_csv_results(file_name: str) -> str:
 
     os.remove("temp.png")
 
-    session = boto3.Session(profile_name='default')
-    client = session.client('textract', region_name='eu-west-2')
+    session = boto3.Session(
+        aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+        aws_secret_access_key=os.environ["AWS_ACCESS_KEY_ID"],
+        region_name="eu-west-2"
+    )
+    
+    client = session.client('textract')
     response = client.analyze_document(Document={'Bytes': bytes_test}, FeatureTypes=['TABLES'])
 
     blocks = response['Blocks']
