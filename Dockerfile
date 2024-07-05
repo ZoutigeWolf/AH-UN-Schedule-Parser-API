@@ -1,9 +1,9 @@
-FROM python:3.11-alpine
+FROM python:latest
 
 COPY requirements.txt ./
 
-RUN apk update && apk add
-RUN apk add --update alpine-sdk
+RUN apt-get update && apt-get upgrade
+RUN apt-get install build-essential
 
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
